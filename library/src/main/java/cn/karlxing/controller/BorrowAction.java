@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.util.List;
 
 @WebServlet("/BorrowAction")
 public class BorrowAction extends HttpServlet {
@@ -47,18 +48,32 @@ public class BorrowAction extends HttpServlet {
                     // 如果记录存在，设置提示信息并转发到显示页面
                     request.setAttribute("errorMessage", "ID为" + bid + "的书已被借出");
                 } else {
-                    borrowDAO.addBorrow(borrow);
-                    request.setAttribute("successMessage", "借书记录添加成功");
+                    boolean result = borrowDAO.addBorrow(borrow);
+                    if (result) {
+                        request.setAttribute("successMessage", "借书记录添加成功");
+                    } else {
+                        request.setAttribute("errorMessage", "添加借书记录失败");
+                    }
                 }
             } else if ("update".equals(operation)) {
-                borrowDAO.updateBorrow(borrow);
-                request.setAttribute("successMessage", "借书记录更新成功");
+                boolean result = borrowDAO.updateBorrow(borrow);
+                if (result) {
+                    request.setAttribute("successMessage", "借书记录更新成功");
+                } else {
+                    request.setAttribute("errorMessage", "更新借书记录失败");
+                }
             } else if ("delete".equals(operation)) {
-                borrowDAO.deleteBorrow(Integer.parseInt(sid), Integer.parseInt(bid));
-                request.setAttribute("successMessage", "借书记录删除成功");
+                int id = Integer.parseInt(request.getParameter("id"));
+                boolean result = borrowDAO.deleteBorrow(id);
+                if (result) {
+                    request.setAttribute("successMessage", "借书记录删除成功");
+                } else {
+                    request.setAttribute("errorMessage", "删除借书记录失败");
+                }
             }
         } catch (Exception e) {
             request.setAttribute("errorMessage", "数据库操作失败: " + e.getMessage());
+            e.printStackTrace(); // 打印堆栈跟踪以便于调试
         } finally {
             if (cn != null) {
                 try {
@@ -76,6 +91,15 @@ public class BorrowAction extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         // 处理GET请求的逻辑（如果有需要）
+        Connection cn = getDatabaseConnection();
+        if (cn == null) {
+            throw new ServletException("数据库连接未建立");
+        }
+
+        BorrowDAO borrowDAO = new BorrowDAO(cn);
+        List<BorrowPO> borrows = borrowDAO.getAllBorrows();
+        request.setAttribute("borrowList", borrows);
+        request.getRequestDispatcher("/BRlog.jsp").forward(request, response);
     }
 
     // 获取数据库连接的方法

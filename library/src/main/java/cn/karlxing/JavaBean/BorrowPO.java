@@ -1,20 +1,25 @@
 package cn.karlxing.JavaBean;
 
 public class BorrowPO {
-    private int id; // log自身的ID
+    private int id;
     private int studentID;
     private int bookID;
-    private int borrowDate; // 借书日期，使用整数存储（yyMMdd格式）
-    private int returnDate; // 还书日期，使用整数存储（yyMMdd格式）
+    private int borrowDate;
+    private int returnDate;
 
-    public int getId() {
-        return id;
+    // 无参数构造函数
+    public BorrowPO() {
     }
 
-    public void setId(int id) {
-        this.id = id;
+    // 带所有参数的构造函数（如果需要）
+    public BorrowPO(int studentID, int bookID, int borrowDate, int returnDate) {
+        this.studentID = studentID;
+        this.bookID = bookID;
+        this.borrowDate = borrowDate;
+        this.returnDate = returnDate;
     }
 
+    // Getters and Setters
     public int getStudentID() {
         return studentID;
     }
@@ -47,9 +52,22 @@ public class BorrowPO {
         this.returnDate = returnDate;
     }
 
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
     @Override
     public String toString() {
-        return "Student ID: " + studentID + ", Book ID: " + bookID +
-                ", Borrow Date: " + (borrowDate != 0 ? String.format("%06d", borrowDate) : "未还") + ", Return Date: " + (returnDate != 0 ? String.format("%06d", returnDate) : "未还");
+        return "BorrowPO{" +
+                "id=" + id +
+                ", studentID=" + studentID +
+                ", bookID=" + bookID +
+                ", borrowDate=" + borrowDate +
+                ", returnDate=" + returnDate +
+                '}';
     }
 }

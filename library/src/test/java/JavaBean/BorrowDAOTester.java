@@ -1,27 +1,31 @@
-package JavaBean;
+package cn.karlxing.test;
 
 import cn.karlxing.JavaBean.BorrowDAO;
 import cn.karlxing.JavaBean.BorrowPO;
+import cn.karlxing.JavaBean.DatabaseManager;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
+import java.util.List;
 
 public class BorrowDAOTester {
+
     private Connection connection;
     private BorrowDAO dao;
 
     public BorrowDAOTester() {
         String user = "root";
-        String password = ""; // 请确保与 MySQL root 用户密码一致
+        String password = "";
         String url = "jdbc:mysql://localhost:3306/mngsys?useSSL=false&allowPublicKeyRetrieval=true&useLegacyDatetimeCode=false&serverTimezone=Asia/Shanghai";
 
         try {
             connection = DriverManager.getConnection(url, user, password);
-            dao = new BorrowDAO(connection); // 使用 MySQL 连接初始化 BorrowDAO
+            dao = new BorrowDAO(connection); // Initialize BorrowDAO with MySQL connection
         } catch (SQLException e) {
-            System.out.println("连接失败: " + e.getMessage());
+            System.out.println("Connection failed: " + e.getMessage());
         }
     }
 
@@ -29,144 +33,117 @@ public class BorrowDAOTester {
         try {
             if (connection != null && !connection.isClosed()) {
                 connection.close();
-                System.out.println("成功关闭连接。");
+                System.out.println("Closed connection successfully.");
             }
         } catch (SQLException e) {
-            System.out.println("关闭连接失败: " + e.getMessage());
+            System.out.println("Failed to close connection: " + e.getMessage());
         }
     }
 
     private void createTable() {
-        String sql = "CREATE TABLE Borrow(Sid INT, Bid INT, borrowDate INT, returnDate INT, PRIMARY KEY (Sid, Bid))";
-        try (var stmt = connection.createStatement()) {
+        String sql = "CREATE TABLE Borrow (id INT PRIMARY KEY, Sid INT, Bid INT, borrowDate INT, returnDate INT)";
+        try (Statement stmt = connection.createStatement()) { // Use try-with-resources
             stmt.execute(sql);
-            System.out.println("创建表 Borrow 成功。");
+            System.out.println("Created table Borrow");
         } catch (SQLException e) {
-            System.out.println("创建表 Borrow 时出错: " + e.getMessage());
+            System.out.println("Error creating table Borrow: " + e.getMessage());
         }
     }
 
     private void dropTable() {
-        try (var stmt = connection.createStatement()) {
+        try (Statement stmt = connection.createStatement()) { // Use try-with-resources
             stmt.execute("DROP TABLE IF EXISTS Borrow");
-            System.out.println("删除表 Borrow 成功。");
+            System.out.println("Dropped table Borrow");
         } catch (SQLException e) {
-            System.out.println("删除表 Borrow 时出错: " + e.getMessage());
+            System.out.println("Error dropping table Borrow: " + e.getMessage());
         }
     }
 
     private void insertInitRecords() {
         ArrayList<BorrowPO> borrows = new ArrayList<>();
 
-        // 创建初始借阅记录
-        borrows.add(createBorrow(1, 101, 20231110, 20231210));
-        borrows.add(createBorrow(2, 102, 20231111, 20231211));
-        borrows.add(createBorrow(3, 103, 20231112, 20231212));
+        // Create initial borrow records
+        BorrowPO borrow1 = new BorrowPO();
+        borrow1.setId(100); // 手动设置唯一的ID
+        borrow1.setStudentID(1);
+        borrow1.setBookID(101);
+        borrow1.setBorrowDate(20241130);
+        borrow1.setReturnDate(0);
 
-        for (BorrowPO borrow : borrows) {
-            dao.addBorrow(borrow);
-        }
-        System.out.println("插入初始借阅记录成功。");
+        BorrowPO borrow2 = new BorrowPO();
+        borrow2.setId(200); // 手动设置唯一的ID
+        borrow2.setStudentID(2);
+        borrow2.setBookID(102);
+        borrow2.setBorrowDate(20241130);
+        borrow2.setReturnDate(0);
+
+        dao.addBorrow(borrow1); // Add first borrow record
+        dao.addBorrow(borrow2); // Add second borrow record
+        System.out.println("Inserted 2 initial records");
+        System.out.println("== Records initialized successfully ==");
 
         testQueryRecords();
-    }
-
-    private BorrowPO createBorrow(int sid, int bid, int borrowDate, int returnDate) {
-        BorrowPO borrow = new BorrowPO();
-        borrow.setStudentID(sid);
-        borrow.setBookID(bid);
-        borrow.setBorrowDate(borrowDate);
-        borrow.setReturnDate(returnDate);
-        return borrow;
     }
 
     private void testQueryRecords() {
-        System.out.println("Sid " + "  Bid  " + "  Borrow Date  " + "  Return Date ");
-        var list = dao.getAllBorrows();
+        System.out.println("ID " + "  Student ID " + "  Book ID " + "  Borrow Date " + "  Return Date");
+        List<BorrowPO> list = dao.getAllBorrows(); // Query borrow records
         if (list != null && !list.isEmpty()) {
             for (BorrowPO one : list) {
-                System.out.println(one);
+                System.out.println(one.toString());
             }
         } else {
-            System.out.println("未找到任何借阅记录。");
-        }
-    }
-
-    private void testInsertBorrowOnlyRecord() {
-        // 插入仅包含借书日期的记录，不设置还书日期
-        BorrowPO borrow = createBorrow(5, 105, 20231113, 0); // 设置returnDate为0表示空值
-        dao.addBorrow(borrow);
-
-        System.out.println();
-        System.out.println("== 插入仅包含借书日期的记录后 ==");
-        testQueryRecords();
-    }
-
-    private void testReturnBook() {
-        // 更新一条记录的还书日期
-        BorrowPO borrow = dao.getBorrow(5, 105);
-        if (borrow != null) {
-            borrow.setReturnDate(20231215); // 设置还书日期
-            dao.updateBorrow(borrow);
-
-            System.out.println();
-            System.out.println("== 更新还书日期后 ==");
-            testQueryRecords();
-        } else {
-            System.out.println("未找到 Sid=5 和 Bid=105 的借阅记录用于更新。");
+            System.out.println("No records found.");
         }
     }
 
     private void testInsertRecord() {
-        BorrowPO borrow = createBorrow(4, 104, 20231113, 20231213);
-        dao.addBorrow(borrow);
+        BorrowPO borrow = new BorrowPO();
+        borrow.setStudentID(3);
+        borrow.setBookID(103);
+        borrow.setBorrowDate(20241130);
+        borrow.setReturnDate(0);
+        dao.addBorrow(borrow); // Add a single borrow record
 
         System.out.println();
-        System.out.println("== 插入新借阅记录后 ==");
+        System.out.println("== After inserting a new borrow record =="); // Output result
         testQueryRecords();
     }
 
     private void testUpdateRecord() {
-        BorrowPO borrow = dao.getBorrow(4, 104);
+        BorrowPO borrow = dao.getBorrowById(100); // Query borrow record
         if (borrow != null) {
-            borrow.setReturnDate(20231220); // 更新归还日期
-            dao.updateBorrow(borrow);
+            borrow.setReturnDate(20241230); // Update return date
+            dao.updateBorrow(borrow); // Update borrow record
 
             System.out.println();
-            System.out.println("== 更新借阅记录后 ==");
+            System.out.println("== After updating a borrow record =="); // Output result
             testQueryRecords();
         } else {
-            System.out.println("未找到 Sid=4 和 Bid=104 的借阅记录用于更新。");
+            System.out.println("No borrow found with Book ID 103 for update.");
         }
     }
 
     private void testDeleteRecord() {
-        boolean deleted = dao.deleteBorrow(4, 104);
-        if (deleted) {
+        BorrowPO borrow = dao.getBorrowById(100); // Query borrow record
+        if (borrow != null) {
+            dao.deleteBorrow(borrow.getId()); // Delete borrow record
             System.out.println();
-            System.out.println("== 删除借阅记录后 ==");
+            System.out.println("== After deleting a borrow record =="); // Output result
             testQueryRecords();
         } else {
-            System.out.println("未找到 Sid=4 和 Bid=104 的借阅记录用于删除。");
+            System.out.println("No borrow found with Book ID 103 for deletion.");
         }
     }
 
     public static void main(String[] args) {
-        BorrowDAOTester daoTester = new BorrowDAOTester();
-        daoTester.dropTable();
-        daoTester.createTable();
-        daoTester.insertInitRecords();
-
-        // 测试插入仅包含借书日期的记录
-        daoTester.testInsertBorrowOnlyRecord();
-
-        // 测试还书操作，更新还书日期
-        daoTester.testReturnBook();
-
-        daoTester.testInsertRecord();
-        daoTester.testUpdateRecord();
-        daoTester.testDeleteRecord();
-
-        daoTester.closeConnection();
+        BorrowDAOTester daoTester = new BorrowDAOTester(); // Create an instance of the tester
+        daoTester.dropTable(); // Drop table
+        daoTester.createTable(); // Create table
+        daoTester.insertInitRecords(); // Insert initial records
+        daoTester.testInsertRecord(); // Test inserting records
+        daoTester.testUpdateRecord(); // Test updating records
+        daoTester.testDeleteRecord(); // Test deleting records
+        daoTester.closeConnection(); // Close connection
     }
 }
