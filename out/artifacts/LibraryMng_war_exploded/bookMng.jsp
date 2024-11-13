@@ -6,7 +6,7 @@
     List<BookPO> books = null;
     String errorMessage = null;
     try {
-        dbManager = new DatabaseManager("com.mysql.jdbc.Driver", "jdbc:mysql://localhost:3306/Library/mngsys", "root", "");
+        dbManager = new DatabaseManager("com.mysql.cj.jdbc.Driver", "jdbc:mysql://localhost:3306/mngsys?useSSL=false&serverTimezone=UTC", "root", "");
         Connection connection = dbManager.getConnection();
         if (connection == null) {
             throw new SQLException("无法建立数据库连接");
@@ -27,7 +27,8 @@
     <title>图书管理</title>
 </head>
 <body>
-<h1>图书列表</h1>
+<h2>图书馆后台</h2>
+<h2>图书管理</h2>
 <% if (errorMessage != null) { %>
 <p style="color: red"><%= errorMessage %></p>
 <% } else if (books != null) { %>
