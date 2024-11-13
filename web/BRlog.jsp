@@ -27,6 +27,11 @@
             color: green;
         }
     </style>
+    <script language="javascript" type="text/javascript">
+        function editLog(id) {
+            window.location.href = 'editLog.jsp?id=' + id;
+        }
+    </script>
 </head>
 <body>
 <h1>图书馆后台</h1>
@@ -72,7 +77,7 @@
         <td><%= String.format("%06d", borrow.getBorrowDate()) %></td>
         <td><%= borrow.getReturnDate() != 0 ? String.format("%06d", borrow.getReturnDate()) : "未还" %></td>
         <td>
-            <a href="editBorrow.jsp?sid=<%= borrow.getStudentID() %>&bid=<%= borrow.getBookID() %>">编辑</a>
+            <button onclick="editLog(<%= borrow.getId() %>)">编辑</button>
             <form action="BorrowAction" method="post" style="display:inline;">
                 <input type="hidden" name="operation" value="delete">
                 <input type="hidden" name="id" value="<%= borrow.getId() %>">
