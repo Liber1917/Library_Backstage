@@ -9,6 +9,7 @@
     <welcome-file-list>
         <welcome-file>portal.jsp</welcome-file>
     </welcome-file-list>
+    
 
 <!--    &lt;!&ndash; 配置编码过滤器 &ndash;&gt;-->
 <!--    <filter>-->

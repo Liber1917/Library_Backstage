@@ -29,6 +29,7 @@
 <body>
 <h2>图书馆后台</h2>
 <h2>图书管理</h2>
+
 <% if (errorMessage != null) { %>
 <p style="color: red"><%= errorMessage %></p>
 <% } else if (books != null) { %>
@@ -38,6 +39,7 @@
         <th>书名</th>
         <th>作者</th>
         <th>版本</th>
+        <th>操作</th>
     </tr>
     <% for (BookPO book : books) { %>
     <tr>
@@ -45,9 +47,16 @@
         <td><%= book.getTitle() %></td>
         <td><%= book.getAuthor() %></td>
         <td><%= book.getVersion() %></td>
+        <td>
+            <button onclick="location.href='editBook.jsp?bid=<%= book.getId() %>'">编辑</button>
+            <button onclick="if(confirm('确定删除吗？')) location.href='deleteBook.jsp?bid=<%= book.getId() %>'">删除</button>
+        </td>
     </tr>
     <% } %>
 </table>
 <% } %>
+
+<button onclick="location.href='addBook.jsp'">添加图书</button>
+
 </body>
 </html>
