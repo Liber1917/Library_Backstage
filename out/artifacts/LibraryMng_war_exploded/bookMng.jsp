@@ -49,7 +49,11 @@
         <td><%= book.getVersion() %></td>
         <td>
             <button onclick="location.href='editBook.jsp?bid=<%= book.getId() %>'">编辑</button>
-            <button onclick="if(confirm('确定删除吗？')) location.href='deleteBook.jsp?bid=<%= book.getId() %>'">删除</button>
+            <form action="BookAction" method="post" style="display:inline;">
+                <input type="hidden" name="operation" value="delete">
+                <input type="hidden" name="Bid" value="<%= book.getId() %>">
+                <button type="submit" onclick="return confirm('确定删除吗？')">删除</button>
+            </form>
         </td>
     </tr>
     <% } %>
