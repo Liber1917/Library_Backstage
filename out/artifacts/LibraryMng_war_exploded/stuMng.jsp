@@ -7,7 +7,7 @@
   <title>学生管理</title>
 </head>
 <body>
-<script src="./static/js/jquery-3.2.1.js"></script>
+<%--<script src="./static/js/jquery-3.2.1.js"></script>--%>
 <h1>图书馆后台</h1>
 <h2>学生管理</h2>
 
