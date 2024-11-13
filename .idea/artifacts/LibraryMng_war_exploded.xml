@@ -6,6 +6,9 @@
         <element id="directory" name="classes">
           <element id="module-output" name="LibraryMng" />
         </element>
+        <element id="directory" name="lib">
+          <element id="library" level="project" name="Maven: mysql:mysql-connector-java:8.0.16" />
+        </element>
       </element>
       <element id="module-output" name="library" />
       <element id="javaee-facet-resources" facet="LibraryMng/web/Web" />
