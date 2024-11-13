@@ -3,12 +3,14 @@ package cn.karlxing.controller;
 import cn.karlxing.JavaBean.BookDAO;
 import cn.karlxing.JavaBean.BookPO;
 
+import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.sql.Connection;
+import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -18,11 +20,11 @@ public class BookAction extends HttpServlet {
 
     // 处理GET请求，通常用于查询书籍列表
     @Override
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        // 从ServletContext中获取数据库连接，假设您已经在那里初始化了数据库连接
-        Connection cn = (Connection) getServletContext().getAttribute("dbConnection");
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // 获取数据库连接
+        Connection cn = getDatabaseConnection();
         if (cn == null) {
-            throw new IllegalStateException("数据库连接未建立");
+            throw new ServletException("数据库连接未建立");
         }
 
         BookDAO bookDAO = new BookDAO(cn);
@@ -35,37 +37,52 @@ public class BookAction extends HttpServlet {
 
     // 处理POST请求，通常用于添加、更新或删除书籍
     @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
-        Connection cn = (Connection) getServletContext().getAttribute("dbConnection");
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        // 获取数据库连接
+        Connection cn = getDatabaseConnection();
         if (cn == null) {
-            throw new IllegalStateException("数据库连接未建立");
+            throw new ServletException("数据库连接未建立");
         }
 
         BookDAO bookDAO = new BookDAO(cn);
         String operation = request.getParameter("operation");
 
-        BookPO book = new BookPO(); // 创建BookPO对象
-
-        // 获取书籍输入的参数
+        BookPO book = new BookPO();
         String id = request.getParameter("Bid");
         if (id != null && !id.isEmpty()) {
-            book.setId(Integer.parseInt(id)); // 将字符串转换为整数并设置为book的ID
+            book.setId(Integer.parseInt(id));
         }
-        book.setTitle(request.getParameter("Btitle")); // 设置书名
-        book.setAuthor(request.getParameter("Bauthor")); // 设置作者
-        book.setVersion(request.getParameter("Bversion")); // 设置版本
+        book.setTitle(request.getParameter("Btitle"));
+        book.setAuthor(request.getParameter("Bauthor"));
+        book.setVersion(request.getParameter("Bversion"));
 
-        // 根据操作类型进行相应的数据库操作
-        if ("insert".equals(operation)) {
-            bookDAO.addBook(book);
-        } else if ("update".equals(operation)) {
-            bookDAO.updateBook(book);
-        } else if ("delete".equals(operation)) {
-            int bookId = Integer.parseInt(request.getParameter("Bid")); // 直接获取ID用于删除操作
-            bookDAO.deleteBook(bookId); // 传递ID给删除方法
+        try {
+            if ("insert".equals(operation)) {
+                bookDAO.addBook(book);
+            } else if ("update".equals(operation)) {
+                bookDAO.updateBook(book);
+            } else if ("delete".equals(operation)) {
+                    bookDAO.deleteBook(book);
         }
-
-        // 重定向到bookMng.jsp页面
-        response.sendRedirect("BookMng.jsp");
+    } catch (Exception e) {
+        throw new ServletException("数据库操作失败", e);
     }
+
+    // 重定向到bookMng.jsp页面
+        response.sendRedirect("bookMng.jsp");
+}
+
+        // 获取数据库连接的方法
+        private Connection getDatabaseConnection() {
+            String jdbcURL = "jdbc:mysql://localhost:3306/mngsys?useSSL=false&serverTimezone=UTC";
+            String username = "root";
+            String password = "";
+            try {
+                Class.forName("com.mysql.cj.jdbc.Driver");
+                return DriverManager.getConnection(jdbcURL, username, password);
+            } catch (ClassNotFoundException | SQLException e) {
+                e.printStackTrace();
+                return null;
+            }
+        }
 }
