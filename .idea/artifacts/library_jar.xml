@@ -1,0 +1,15 @@
+<component name="ArtifactManager">
+  <artifact name="library:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/library_jar</output-path>
+    <root id="root">
+      <element id="archive" name="library.jar">
+        <element id="directory" name="META-INF">
+          <element id="file-copy" path="$PROJECT_DIR$/web/META-INF/MANIFEST.MF" />
+        </element>
+        <element id="module-output" name="library" />
+      </element>
+      <element id="library" level="project" name="Maven: com.google.protobuf:protobuf-java:3.6.1" />
+      <element id="library" level="project" name="Maven: mysql:mysql-connector-java:8.0.16" />
+    </root>
+  </artifact>
+</component>

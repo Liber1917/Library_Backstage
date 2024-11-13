@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
-  <configuration default="false" name="Tomcat4Library" type="#com.intellij.j2ee.web.tomcat.TomcatRunConfigurationFactory" factoryName="Local" APPLICATION_SERVER_NAME="Tomcat " ALTERNATIVE_JRE_ENABLED="true" ALTERNATIVE_JRE_PATH="17">
-    <option name="OPEN_IN_BROWSER_URL" value="http://localhost:9090/LibraryMng_war_exploded/Index.jsp" />
+  <configuration default="false" name="Tomcat4Library" type="#com.intellij.j2ee.web.tomcat.TomcatRunConfigurationFactory" factoryName="Local" APPLICATION_SERVER_NAME="Tomcat" ALTERNATIVE_JRE_ENABLED="true" ALTERNATIVE_JRE_PATH="17">
+    <option name="OPEN_IN_BROWSER_URL" value="http://localhost:9090/LibraryMng_war_exploded/portal.jsp" />
     <option name="UPDATING_POLICY" value="restart-server" />
     <deployment>
       <artifact name="LibraryMng:war exploded">
@@ -82,7 +82,6 @@
       </SHUTDOWN>
     </ConfigurationWrapper>
     <method v="2">
-      <option name="MakeNoErrorCheck" enabled="true" />
       <option name="BuildArtifacts" enabled="true">
         <artifact name="LibraryMng:war exploded" />
       </option>

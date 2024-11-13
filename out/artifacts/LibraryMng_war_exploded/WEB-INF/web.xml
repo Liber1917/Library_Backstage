@@ -7,7 +7,7 @@
 
     <!-- 设置欢迎页面 -->
     <welcome-file-list>
-        <welcome-file>index.jsp</welcome-file>
+        <welcome-file>portal.jsp</welcome-file>
     </welcome-file-list>
 
 <!--    &lt;!&ndash; 配置编码过滤器 &ndash;&gt;-->
