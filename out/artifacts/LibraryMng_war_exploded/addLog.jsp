@@ -48,5 +48,15 @@
   还书日期：<input type="text" name="returnDate" value="-1" required><br>
   <input type="submit" value="添加记录">
 </form>
+<%
+  String error = request.getParameter("error");
+  if ("UnableToAdd".equals(error)) {
+    out.println("<p style='color: red'>该书已经被该学生借阅。</p>");
+  } else if ("InvalidData".equals(error)) {
+    out.println("<p style='color: red'>输入数据无效。</p>");
+  } else if ("DatabaseError".equals(error)) {
+    out.println("<p style='color: red'>数据库操作失败。</p>");
+  }
+%>
 </body>
 </html>

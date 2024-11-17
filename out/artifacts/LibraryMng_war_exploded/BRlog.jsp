@@ -13,6 +13,9 @@
         }
         borrowDAO = new BorrowDAO(connection);
         borrows = borrowDAO.getAllBorrows();
+        if (borrows == null || borrows.isEmpty()) {
+            errorMessage = "没有找到借还记录。";
+        }
     } catch (Exception e) {
         errorMessage = "数据库连接失败或查询出错：" + e.getMessage();
     } finally {

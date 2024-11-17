@@ -1,11 +1,7 @@
 package cn.karlxing.controller;
 
-import cn.karlxing.JavaBean.BorrowDAO;
-import cn.karlxing.JavaBean.BorrowPO;
-import cn.karlxing.JavaBean.StudentDAO;
-import cn.karlxing.JavaBean.BookDAO;
-import cn.karlxing.JavaBean.StudentPO;
-import cn.karlxing.JavaBean.BookPO;
+import cn.karlxing.JavaBean.*;
+
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -66,22 +62,37 @@ public class BorrowAction extends HttpServlet {
         BorrowDAO borrowDAO = new BorrowDAO(cn);
 
         if ("insert".equals(operation)) {
-            BorrowPO borrow = new BorrowPO();
-            int studentID = Integer.parseInt(request.getParameter("studentID"));
-            int bookID = Integer.parseInt(request.getParameter("bookID"));
-            int borrowDate = Integer.parseInt(request.getParameter("borrowDate"));
-            int returnDate = request.getParameter("returnDate") == null || request.getParameter("returnDate").isEmpty() ? -1 : Integer.parseInt(request.getParameter("returnDate"));
+            try {
+                BorrowPO borrow = new BorrowPO();
+                int studentID = Integer.parseInt(request.getParameter("studentID"));
+                int bookID = Integer.parseInt(request.getParameter("bookID"));
+                int borrowDate = Integer.parseInt(request.getParameter("borrowDate"));
+                int returnDate = request.getParameter("returnDate") == null || request.getParameter("returnDate").isEmpty() ? -1 : Integer.parseInt(request.getParameter("returnDate"));
 
-            borrow.setStudentID(studentID);
-            borrow.setBookID(bookID);
-            borrow.setBorrowDate(borrowDate);
-            borrow.setReturnDate(returnDate);
+                borrow.setStudentID(studentID);
+                borrow.setBookID(bookID);
+                borrow.setBorrowDate(borrowDate);
+                borrow.setReturnDate(returnDate);
 
-            boolean success = borrowDAO.addBorrow(borrow);
-            if (success) {
-                response.sendRedirect("BRlog.jsp");
-            } else {
-                response.sendRedirect("addLog.jsp?error=UnableToAdd");
+                boolean success = borrowDAO.addBorrow(borrow);
+                if (success) {
+                    response.sendRedirect("BRlog.jsp");
+                } else {
+                    response.sendRedirect("addLog.jsp?error=UnableToAdd");
+                }
+            } catch (NumberFormatException e) {
+                response.sendRedirect("addLog.jsp?error=InvalidData");
+            } catch (Exception e) {
+                e.printStackTrace();
+                response.sendRedirect("addLog.jsp?error=DatabaseError");
+            } finally {
+                if (cn != null) {
+                    try {
+                        cn.close();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                }
             }
         }
     }
