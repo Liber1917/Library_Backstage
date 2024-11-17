@@ -11,7 +11,7 @@
  Target Server Version : 80040 (8.0.40)
  File Encoding         : 65001
 
- Date: 13/11/2024 17:05:47
+ Date: 14/11/2024 11:53:31
 */
 
 SET NAMES utf8mb4;
@@ -32,9 +32,9 @@ CREATE TABLE `book`  (
 -- ----------------------------
 -- Records of book
 -- ----------------------------
+INSERT INTO `book` VALUES (0, 'Manifesto of Communist', 'Karl Marx', '1st Edition');
+INSERT INTO `book` VALUES (1, 'Nation and Revolution', 'Vladimir Leinin', '9th Edition');
 INSERT INTO `book` VALUES (101, 'Effective Java', 'Joshua Bloch', '3rd Edition');
-INSERT INTO `book` VALUES (102, 'Java: The Complete Reference', 'Herbert Schildt', '11th Edition');
-INSERT INTO `book` VALUES (103, 'Clean Code', 'Robert C. Martin', '1st Edition');
 
 -- ----------------------------
 -- Table structure for bookinfo
@@ -60,20 +60,19 @@ INSERT INTO `bookinfo` VALUES (3, 'The selection of Mao Zedong', 'Mao Zedong', 1
 -- ----------------------------
 DROP TABLE IF EXISTS `borrow`;
 CREATE TABLE `borrow`  (
-  `Sid` int NOT NULL,
-  `Bid` int NOT NULL,
+  `id` int NOT NULL,
+  `Sid` int NULL DEFAULT NULL,
+  `Bid` int NULL DEFAULT NULL,
   `borrowDate` int NULL DEFAULT NULL,
   `returnDate` int NULL DEFAULT NULL,
-  PRIMARY KEY (`Sid`, `Bid`) USING BTREE
+  PRIMARY KEY (`id`) USING BTREE
 ) ENGINE = InnoDB CHARACTER SET = utf8mb4 COLLATE = utf8mb4_bin ROW_FORMAT = Dynamic;
 
 -- ----------------------------
 -- Records of borrow
 -- ----------------------------
-INSERT INTO `borrow` VALUES (1, 101, 20231110, 20231210);
-INSERT INTO `borrow` VALUES (2, 102, 20231111, 20231211);
-INSERT INTO `borrow` VALUES (3, 103, 20231112, 20231212);
-INSERT INTO `borrow` VALUES (5, 105, 20231113, 20231215);
+INSERT INTO `borrow` VALUES (0, 3, 103, 241113, 241114);
+INSERT INTO `borrow` VALUES (200, 2, 102, 20241130, 0);
 
 -- ----------------------------
 -- Table structure for borrowinfo
@@ -123,6 +122,7 @@ CREATE TABLE `student`  (
 -- ----------------------------
 -- Records of student
 -- ----------------------------
+INSERT INTO `student` VALUES (2, 'Xjw', 'Informatik', 'Industrial Intelligence', 1);
 INSERT INTO `student` VALUES (95001, 'San Zhang', 'Informatics', 'Industrial Intelligence', 0);
 INSERT INTO `student` VALUES (95002, 'Li Si', 'Computer Science', 'Software Engineering', 0);
 INSERT INTO `student` VALUES (95003, 'Wang Wu', 'Mathematics', 'Statistics', 1);

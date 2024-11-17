@@ -44,36 +44,23 @@ public class BorrowAction extends HttpServlet {
             }
 
             if ("insert".equals(operation)) {
-                if (borrowDAO.existsBorrow(Integer.parseInt(sid), Integer.parseInt(bid))) {
-                    // 如果记录存在，设置提示信息并转发到显示页面
-                    request.setAttribute("errorMessage", "ID为" + bid + "的书已被借出");
-                } else {
-                    boolean result = borrowDAO.addBorrow(borrow);
-                    if (result) {
-                        request.setAttribute("successMessage", "借书记录添加成功");
+                boolean result = borrowDAO.addBorrow(borrow);
+                if (result) {
+                    // 重新获取所有借还记录并生成新行的 HTML
+                    List<BorrowPO> borrows = borrowDAO.getAllBorrows();
+                    if (borrows != null && !borrows.isEmpty()) {
+                        BorrowPO newBorrow = borrows.get(borrows.size() - 1); // 获取最新添加的记录
+                        String newTableRow = generateTableRow(newBorrow);
+                        response.getWriter().write(newTableRow);
                     } else {
-                        request.setAttribute("errorMessage", "添加借书记录失败");
+                        response.getWriter().write("<p class='error-message'>添加失败，没有找到新记录</p>");
                     }
-                }
-            } else if ("update".equals(operation)) {
-                boolean result = borrowDAO.updateBorrow(borrow);
-                if (result) {
-                    request.setAttribute("successMessage", "借书记录更新成功");
                 } else {
-                    request.setAttribute("errorMessage", "更新借书记录失败");
-                }
-            } else if ("delete".equals(operation)) {
-                int id = Integer.parseInt(request.getParameter("id"));
-                boolean result = borrowDAO.deleteBorrow(id);
-                if (result) {
-                    request.setAttribute("successMessage", "借书记录删除成功");
-                } else {
-                    request.setAttribute("errorMessage", "删除借书记录失败");
+                    response.getWriter().write("<p class='error-message'>添加失败</p>");
                 }
             }
         } catch (Exception e) {
-            request.setAttribute("errorMessage", "数据库操作失败: " + e.getMessage());
-            e.printStackTrace(); // 打印堆栈跟踪以便于调试
+            response.getWriter().write("<p class='error-message'>" + e.getMessage() + "</p>");
         } finally {
             if (cn != null) {
                 try {
@@ -83,9 +70,23 @@ public class BorrowAction extends HttpServlet {
                 }
             }
         }
+    }
 
-        // 转发到BRlog.jsp页面
-        request.getRequestDispatcher("/BRlog.jsp").forward(request, response);
+    private String generateTableRow(BorrowPO borrow) {
+        return "<tr>" +
+                "<td>" + borrow.getStudentID() + "</td>" +
+                "<td>" + borrow.getBookID() + "</td>" +
+                "<td>" + String.format("%06d", borrow.getBorrowDate()) + "</td>" +
+                "<td>" + (borrow.getReturnDate() != 0 ? String.format("%06d", borrow.getReturnDate()) : "未还") + "</td>" +
+                "<td>" +
+                "<button onclick='editLog(" + borrow.getId() + ")'>编辑</button>" +
+                "<form action='BorrowAction' method='post' style='display:inline;'>" +
+                "<input type='hidden' name='operation' value='delete'>" +
+                "<input type='hidden' name='id' value='" + borrow.getId() + "'>" +
+                "<button type='submit' onclick='return confirm(\"确定删除吗？\")'>删除</button>" +
+                "</form>" +
+                "</td>" +
+                "</tr>";
     }
 
     @Override
