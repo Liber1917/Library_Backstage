@@ -114,4 +114,17 @@ public class BorrowDAO {
         }
         return borrows;
     }
+    public boolean isBookCurrentlyBorrowed(int bookID) {
+        String sql = "SELECT COUNT(*) FROM borrow WHERE Bid = ? AND returnDate = -1";
+        try (PreparedStatement pstmt = connection.prepareStatement(sql)) {
+            pstmt.setInt(1, bookID);
+            ResultSet rs = pstmt.executeQuery();
+            if (rs.next()) {
+                return rs.getInt(1) > 0;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
 }

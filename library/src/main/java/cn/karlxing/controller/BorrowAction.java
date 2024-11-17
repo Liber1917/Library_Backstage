@@ -63,24 +63,18 @@ public class BorrowAction extends HttpServlet {
 
         if ("insert".equals(operation)) {
             try {
-                BorrowPO borrow = new BorrowPO();
                 int studentID = Integer.parseInt(request.getParameter("studentID"));
                 int bookID = Integer.parseInt(request.getParameter("bookID"));
                 int borrowDate = Integer.parseInt(request.getParameter("borrowDate"));
                 int returnDate = request.getParameter("returnDate") == null || request.getParameter("returnDate").isEmpty() ? -1 : Integer.parseInt(request.getParameter("returnDate"));
 
-                // 检查书籍是否已被借出
-                boolean isBorrowed = false;
-                for (BorrowPO existingBorrow : borrowDAO.getAllBorrows()) {
-                    if (existingBorrow.getBookID() == bookID && existingBorrow.getReturnDate() == -1) {
-                        isBorrowed = true;
-                        break;
-                    }
-                }
+                // 检查书籍是否已被借出且未还
+                boolean isBorrowed = borrowDAO.isBookCurrentlyBorrowed(bookID);
 
                 if (isBorrowed) {
                     response.sendRedirect("addLog.jsp?error=UnableToAdd");
                 } else {
+                    BorrowPO borrow = new BorrowPO();
                     borrow.setStudentID(studentID);
                     borrow.setBookID(bookID);
                     borrow.setBorrowDate(borrowDate);
