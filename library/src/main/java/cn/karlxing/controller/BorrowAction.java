@@ -94,6 +94,29 @@ public class BorrowAction extends HttpServlet {
                     }
                 }
             }
+        }else if ("delete".equals(operation)) {
+            try {
+                int id = Integer.parseInt(request.getParameter("id"));
+                boolean success = borrowDAO.deleteBorrow(id);
+                if (success) {
+                    response.sendRedirect("BRlog.jsp");
+                } else {
+                    response.sendRedirect("BRlog.jsp?error=UnableToDelete");
+                }
+            } catch (NumberFormatException e) {
+                response.sendRedirect("BRlog.jsp?error=InvalidData");
+            } catch (Exception e) {
+                e.printStackTrace();
+                response.sendRedirect("BRlog.jsp?error=DatabaseError");
+            } finally {
+                if (cn != null) {
+                    try {
+                        cn.close();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
         }
     }
 }
