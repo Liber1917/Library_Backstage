@@ -117,6 +117,41 @@ public class BorrowAction extends HttpServlet {
                     }
                 }
             }
+        }else if ("update".equals(operation)) {
+            try {
+                int id = Integer.parseInt(request.getParameter("id"));
+                int studentID = Integer.parseInt(request.getParameter("studentID"));
+                int bookID = Integer.parseInt(request.getParameter("bookID"));
+                int borrowDate = Integer.parseInt(request.getParameter("borrowDate"));
+                int returnDate = request.getParameter("returnDate") == null || request.getParameter("returnDate").isEmpty() ? -1 : Integer.parseInt(request.getParameter("returnDate"));
+
+                BorrowPO borrow = new BorrowPO();
+                borrow.setId(id);
+                borrow.setStudentID(studentID);
+                borrow.setBookID(bookID);
+                borrow.setBorrowDate(borrowDate);
+                borrow.setReturnDate(returnDate);
+
+                boolean success = borrowDAO.updateBorrow(borrow);
+                if (success) {
+                    response.sendRedirect("BRlog.jsp");
+                } else {
+                    response.sendRedirect("editLog.jsp?id=" + id + "&error=UnableToUpdate");
+                }
+            } catch (NumberFormatException e) {
+                response.sendRedirect("editLog.jsp?id=" + request.getParameter("id") + "&error=InvalidData");
+            } catch (Exception e) {
+                e.printStackTrace();
+                response.sendRedirect("editLog.jsp?id=" + request.getParameter("id") + "&error=DatabaseError");
+            } finally {
+                if (cn != null) {
+                    try {
+                        cn.close();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
         }
     }
 }
