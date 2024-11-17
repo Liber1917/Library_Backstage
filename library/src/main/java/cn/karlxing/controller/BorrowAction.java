@@ -69,16 +69,29 @@ public class BorrowAction extends HttpServlet {
                 int borrowDate = Integer.parseInt(request.getParameter("borrowDate"));
                 int returnDate = request.getParameter("returnDate") == null || request.getParameter("returnDate").isEmpty() ? -1 : Integer.parseInt(request.getParameter("returnDate"));
 
-                borrow.setStudentID(studentID);
-                borrow.setBookID(bookID);
-                borrow.setBorrowDate(borrowDate);
-                borrow.setReturnDate(returnDate);
+                // 检查书籍是否已被借出
+                boolean isBorrowed = false;
+                for (BorrowPO existingBorrow : borrowDAO.getAllBorrows()) {
+                    if (existingBorrow.getBookID() == bookID && existingBorrow.getReturnDate() == -1) {
+                        isBorrowed = true;
+                        break;
+                    }
+                }
 
-                boolean success = borrowDAO.addBorrow(borrow);
-                if (success) {
-                    response.sendRedirect("BRlog.jsp");
-                } else {
+                if (isBorrowed) {
                     response.sendRedirect("addLog.jsp?error=UnableToAdd");
+                } else {
+                    borrow.setStudentID(studentID);
+                    borrow.setBookID(bookID);
+                    borrow.setBorrowDate(borrowDate);
+                    borrow.setReturnDate(returnDate);
+
+                    boolean success = borrowDAO.addBorrow(borrow);
+                    if (success) {
+                        response.sendRedirect("BRlog.jsp");
+                    } else {
+                        response.sendRedirect("addLog.jsp?error=UnableToAdd");
+                    }
                 }
             } catch (NumberFormatException e) {
                 response.sendRedirect("addLog.jsp?error=InvalidData");
@@ -94,7 +107,7 @@ public class BorrowAction extends HttpServlet {
                     }
                 }
             }
-        }else if ("delete".equals(operation)) {
+        } else if ("delete".equals(operation)) {
             try {
                 int id = Integer.parseInt(request.getParameter("id"));
                 boolean success = borrowDAO.deleteBorrow(id);
@@ -117,7 +130,7 @@ public class BorrowAction extends HttpServlet {
                     }
                 }
             }
-        }else if ("update".equals(operation)) {
+        } else if ("update".equals(operation)) {
             try {
                 int id = Integer.parseInt(request.getParameter("id"));
                 int studentID = Integer.parseInt(request.getParameter("studentID"));

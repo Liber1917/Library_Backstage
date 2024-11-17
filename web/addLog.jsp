@@ -4,8 +4,10 @@
   DatabaseManager dbManager = null;
   StudentDAO studentDAO = null;
   BookDAO bookDAO = null;
+  BorrowDAO borrowDAO = null;
   List<StudentPO> students = null;
   List<BookPO> books = null;
+  List<BorrowPO> borrows = null;
   try {
     dbManager = new DatabaseManager("com.mysql.cj.jdbc.Driver", "jdbc:mysql://localhost:3306/mngsys?useSSL=false&serverTimezone=UTC", "root", "");
     Connection connection = dbManager.getConnection();
@@ -14,8 +16,10 @@
     }
     studentDAO = new StudentDAO(connection);
     bookDAO = new BookDAO(connection);
+    borrowDAO = new BorrowDAO(connection);
     students = studentDAO.queryStudents();
     books = bookDAO.queryBooks();
+    borrows = borrowDAO.getAllBorrows();
   } catch (Exception e) {
     e.printStackTrace();
   } finally {
@@ -41,7 +45,16 @@
 </select><br>
   书籍：<select name="bookID">
   <% for (BookPO book : books) { %>
-  <option value="<%= book.getId() %>"><%= book.getTitle() %></option>
+  <%
+    boolean isBorrowed = false;
+    for (BorrowPO borrow : borrows) {
+      if (borrow.getBookID() == book.getId() && borrow.getReturnDate() == -1) {
+        isBorrowed = true;
+        break;
+      }
+    }
+  %>
+  <option value="<%= book.getId() %>" <%= isBorrowed ? "style='color: grey; background-color: #f1f1f1; pointer-events: none;'" : "" %>><%= book.getTitle() %></option>
   <% } %>
 </select><br>
   借书日期：<input type="text" name="borrowDate" required><br>
