@@ -1,42 +1,5 @@
-<%@ page contentType="text/html;charset=UTF-8" language="java" %>
 <%@ page import="java.util.*, cn.karlxing.JavaBean.*, java.sql.*" %>
-
-<html>
-<head>
-    <title>借还登记</title>
-    <style>
-        table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-        th, td {
-            border: 1px solid black;
-            padding: 8px;
-            text-align: left;
-        }
-        th {
-            background-color: #f2f2f2;
-        }
-        tr:nth-child(even) {
-            background-color: #f9f9f9;
-        }
-        .error-message {
-            color: red;
-        }
-        .success-message {
-            color: green;
-        }
-    </style>
-    <script language="javascript" type="text/javascript">
-        function editLog(id) {
-            window.location.href = 'editLog.jsp?id=' + id;
-        }
-    </script>
-</head>
-<body>
-<h1>图书馆后台</h1>
-<h2>借还登记</h2>
-
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%
     DatabaseManager dbManager = null;
     BorrowDAO borrowDAO = null;
@@ -59,11 +22,20 @@
     }
 %>
 
+<html>
+<head>
+    <title>借还记录</title>
+</head>
+<body>
+<h2>图书馆后台</h2>
+<h2>借还记录</h2>
+
 <% if (errorMessage != null) { %>
-<p class="error-message"><%= errorMessage %></p>
+<p style="color: red"><%= errorMessage %></p>
 <% } else if (borrows != null) { %>
 <table>
     <tr>
+        <th>ID</th>
         <th>学生ID</th>
         <th>书籍ID</th>
         <th>借书日期</th>
@@ -72,12 +44,13 @@
     </tr>
     <% for (BorrowPO borrow : borrows) { %>
     <tr>
+        <td><%= borrow.getId() %></td>
         <td><%= borrow.getStudentID() %></td>
         <td><%= borrow.getBookID() %></td>
-        <td><%= String.format("%06d", borrow.getBorrowDate()) %></td>
-        <td><%= borrow.getReturnDate() != 0 ? String.format("%06d", borrow.getReturnDate()) : "未还" %></td>
+        <td><%= borrow.getBorrowDate() %></td>
+        <td><%= borrow.getReturnDate() == -1 ? "未还" : borrow.getReturnDate() %></td>
         <td>
-            <button onclick="editLog(<%= borrow.getId() %>)">编辑</button>
+            <button onclick="location.href='editLog.jsp?id=<%= borrow.getId() %>'">编辑</button>
             <form action="BorrowAction" method="post" style="display:inline;">
                 <input type="hidden" name="operation" value="delete">
                 <input type="hidden" name="id" value="<%= borrow.getId() %>">
@@ -89,15 +62,7 @@
 </table>
 <% } %>
 
-<!-- 添加借还记录的表单 -->
-<form action="BorrowAction" method="post">
-    <input type="hidden" name="operation" value="insert">
-    学生ID：<input type="text" name="Sid" required><br>
-    书籍ID：<input type="text" name="Bid" required><br>
-    借书日期：<input type="text" name="borrowDate" required placeholder="格式：yyMMdd"><br>
-    还书日期：<input type="text" name="returnDate" placeholder="格式：yyMMdd 或者留空表示未还"><br>
-    <input type="submit" value="添加记录">
-</form>
+<button onclick="location.href='addLog.jsp'">添加记录</button>
 
 </body>
 </html>
