@@ -86,6 +86,6 @@
 <% } %>
 
 <button onclick="location.href='addStudent.jsp'">添加学生</button>
-
+<button onclick="location.href='portal.jsp'">回到门户</button>
 </body>
 </html>

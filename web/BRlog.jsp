@@ -28,6 +28,29 @@
 <html>
 <head>
     <title>借还记录</title>
+    <style>
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        tr:nth-child(even) {
+            background-color: #f9f9f9;
+        }
+        .error-message {
+            color: red;
+        }
+        .success-message {
+            color: green;
+        }
+    </style>
 </head>
 <body>
 <h2>图书馆后台</h2>
@@ -66,6 +89,6 @@
 <% } %>
 
 <button onclick="location.href='addLog.jsp'">添加记录</button>
-
+<button onclick="location.href='portal.jsp'">回到门户</button>
 </body>
 </html>

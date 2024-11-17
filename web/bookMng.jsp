@@ -84,6 +84,6 @@
 <% } %>
 
 <button onclick="location.href='addBook.jsp'">添加图书</button>
-
+<button onclick="location.href='portal.jsp'">回到门户</button>
 </body>
 </html>
